@@ -79,34 +79,32 @@
                                 };
                         }
                     };
-                f = (twice = ()[fun f -> fun x -> f (f x)])[fun x -> x * x], x = 16
-                    |- f (f x) evalto 65536 by E-App {
-                        f = (twice = ()[fun f -> fun x -> f (f x)])[fun x -> x * x], x = 16
-                            |- f evalto (twice = ()[fun f -> fun x -> f (f x)])[fun x -> x * x] by E-Var2 {
-                                f = (twice = ()[fun f -> fun x -> f (f x)])[fun x -> x * x]
-                                    |- f evalto (twice = ()[fun f -> fun x -> f (f x)])[fun x -> x * x] by E-Var1 {};
-                            };
-                        f = (twice = ()[fun f -> fun x -> f (f x)])[fun x -> x * x], x = 16
-                            |- f x evalto 256 by E-App {
-                                f = (twice = ()[fun f -> fun x -> f (f x)])[fun x -> x * x], x = 16
-                                    |- f evalto (twice = ()[fun f -> fun x -> f (f x)])[fun x -> x * x] by E-Var2 {
-                                        f = (twice = ()[fun f -> fun x -> f (f x)])[fun x -> x * x]
-                                            |- f evalto (twice = ()[fun f -> fun x -> f (f x)])[fun x -> x * x] by E-Var1 {};
-                                    };
-                                f = (twice = ()[fun f -> fun x -> f (f x)])[fun x -> x * x], x = 16
-                                    |- x evalto 16 by E-Var1 {};
-                                twice = ()[fun f -> fun x -> f (f x)], x = 16 |- x * x evalto 256 by E-Times {
-                                    twice = ()[fun f -> fun x -> f (f x)], x = 16 |- x evalto 16 by E-Var1{};
-                                    twice = ()[fun f -> fun x -> f (f x)], x = 16 |- x evalto 16 by E-Var1{};
-                                    16 times 16 is 256 by B-Times {};
-                                };
-                            };
-                        twice = ()[fun f -> fun x -> f (f x)], x = 256 |- x * x evalto 65536 by E-Times {
-                            twice = ()[fun f -> fun x -> f (f x)], x = 256 |- x evalto 256 by E-Var1{};
-                            twice = ()[fun f -> fun x -> f (f x)], x = 256 |- x evalto 256 by E-Var1{};
-                            256 times 256 is 65536 by B-Times {};
-                        };
-                    }
+                f = (twice = ()[fun f -> fun x -> f (f x)])[fun x -> x * x], x = 16 |- f (f x) evalto 65536 by E-App {
+			f = (twice = ()[fun f -> fun x -> f (f x)])[fun x -> x * x], x = 16 |- f evalto (twice = ()[fun f -> fun x -> f (f x)])[fun x -> x * x] by E-Var2 {
+				f = (twice = ()[fun f -> fun x -> f (f x)])[fun x -> x * x]
+				    |- f evalto (twice = ()[fun f -> fun x -> f (f x)])[fun x -> x * x] by E-Var1 {};
+			    };
+			f = (twice = ()[fun f -> fun x -> f (f x)])[fun x -> x * x], x = 16
+			    |- f x evalto 256 by E-App {
+				f = (twice = ()[fun f -> fun x -> f (f x)])[fun x -> x * x], x = 16
+				    |- f evalto (twice = ()[fun f -> fun x -> f (f x)])[fun x -> x * x] by E-Var2 {
+					f = (twice = ()[fun f -> fun x -> f (f x)])[fun x -> x * x]
+					    |- f evalto (twice = ()[fun f -> fun x -> f (f x)])[fun x -> x * x] by E-Var1 {};
+				    };
+				f = (twice = ()[fun f -> fun x -> f (f x)])[fun x -> x * x], x = 16
+				    |- x evalto 16 by E-Var1 {};
+				twice = ()[fun f -> fun x -> f (f x)], x = 16 |- x * x evalto 256 by E-Times {
+				    twice = ()[fun f -> fun x -> f (f x)], x = 16 |- x evalto 16 by E-Var1{};
+				    twice = ()[fun f -> fun x -> f (f x)], x = 16 |- x evalto 16 by E-Var1{};
+				    16 times 16 is 256 by B-Times {};
+				};
+			    };
+			twice = ()[fun f -> fun x -> f (f x)], x = 256 |- x * x evalto 65536 by E-Times {
+			    twice = ()[fun f -> fun x -> f (f x)], x = 256 |- x evalto 256 by E-Var1{};
+			    twice = ()[fun f -> fun x -> f (f x)], x = 256 |- x evalto 256 by E-Var1{};
+			    256 times 256 is 65536 by B-Times {};
+			};
+		}
             }
         }
     }
