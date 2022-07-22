@@ -1,0 +1,336 @@
+/*82*/
+x : bool, y : int |- if x then y + 1 else y - 1 : int by T-If {
+    x : bool, y : int |- x : bool by T-Var {};
+    x : bool, y : int |- y + 1 : int by T-Plus {
+        x : bool, y : int |- y : int by T-Var {};
+        x : bool, y : int |- 1 : int by T-Int {}
+    };
+    x : bool, y : int |- y - 1 : int by T-Minus {
+        x : bool, y : int |- y : int by T-Var {};
+        x : bool, y : int |- 1 : int by T-Int {}
+    }
+}
+/*83*/
+|- let x = 3 < 2 in let y = 5 in if x then y else 2 : int by T-Let {
+    |- 3 < 2 : bool by T-Lt {
+        |- 3 : int by T-Int {};
+        |- 2 : int by T-Int {}
+    };
+    x : bool |- let y = 5 in if x then y else 2 : int by T-Let {
+        x : bool |- 5 : int by T-Int {};
+        x : bool, y : int |- if x then y else 2 : int by T-If {
+            x : bool, y : int |- x : bool by T-Var {};
+            x : bool, y : int |- y : int by T-Var {};
+            x : bool, y : int |- 2 : int by T-Int {}
+        }
+    }
+}
+/*84*/
+|- fun x -> x + 1 : int -> int by T-Fun {
+    x : int |- x + 1 : int by T-Plus {
+        x : int |- x : int by T-Var {};
+        x : int |- 1 : int by T-Int {}
+    }
+}
+/*85*/
+|- let f = fun x -> x + 1 in f 4 : int by T-Let {
+    |- fun x -> x + 1 : int -> int by T-Fun {
+        x : int |- x + 1 : int by T-Plus {
+            x : int |- x : int by T-Var {};
+            x : int |- 1 : int by T-Int {}
+        }
+    };
+    f : int -> int |- f 4 : int by T-App {
+        f : int -> int |- f : int -> int by T-Var {};
+        f : int -> int |- 4 : int by T-Int {}
+    }
+}
+/*86*/
+|- fun f -> f 0 + f 1 : (int -> int) -> int by T-Fun {
+    f : int -> int |- f 0 + f 1 : int by T-Plus {
+        f : int -> int |- f 0 : int by T-App {
+            f : int -> int |- f : int -> int by T-Var {};
+            f : int -> int |- 0 : int by T-Int {}
+        };
+        f : int -> int |- f 1 : int by T-App {
+            f : int -> int |- f : int -> int by T-Var {};
+            f : int -> int |- 1 : int by T-Int {}
+        }
+    }
+}
+/*87*/
+|- let max = fun x -> fun y -> if x < y then y else x in max 3 5 : int by T-Let {
+    |- fun x -> fun y -> if x < y then y else x : int -> int -> int by T-Fun {
+        x : int |- fun y -> if x < y then y else x : int -> int by T-Fun {
+            x : int, y : int |- if x < y then y else x : int by T-If {
+                x : int, y : int |- x < y : bool by T-Lt {
+                    x : int, y : int |- x : int by T-Var {};
+                    x : int, y : int |- y : int by T-Var {}
+                };
+                x : int, y : int |- y : int by T-Var {};
+                x : int, y : int |- x : int by T-Var {}
+            }
+        }
+    };
+    max : int -> int -> int |- max 3 5 : int by T-App {
+        max : int -> int -> int |- max 3 : int -> int by T-App {
+            max : int -> int -> int |- max : int -> int -> int by T-Var {};
+            max : int -> int -> int |- 3 : int by T-Int {}
+        };
+        max : int -> int -> int |- 5 : int by T-Int {}
+    }
+}
+
+/*88*/
+|- 4 :: [] : int list by T-Cons {
+    |- 4 : int by T-Int {};
+    |- [] : int list by T-Nil {};
+}
+/*89*/
+|- true :: false :: [] : bool list by T-Cons {
+    |- true : bool by T-Bool {};
+    |- false :: [] : bool list by T-Cons {
+        |- false : bool by T-Bool {};
+        |- [] : bool list by T-Nil {}
+    }
+}
+/*90*/
+|- fun x -> fun y -> x : int -> int -> int by T-Fun {
+    x : int |- fun y -> x : int -> int by T-Fun {
+        x : int, y : int |- x : int by T-Var {}
+    }
+}
+/*91*/
+|- fun x -> fun y -> x : bool -> int -> bool by T-Fun {
+    x : bool |- fun y -> x : int -> bool by T-Fun {
+        x : bool, y : int |- x : bool by T-Var {}
+    }
+}
+/*92*/
+|- let k = fun x -> fun y -> x in k 3 true : int by T-Let {
+    |- fun x -> fun y -> x : int -> bool -> int by T-Fun {
+        x : int |- fun y -> x : bool -> int by T-Fun {
+            x : int, y : bool |- x : int by T-Var {}
+        }
+    };
+    k : int -> bool -> int |- k 3 true : int by T-App {
+        k : int -> bool -> int |- k 3 : bool -> int by T-App {
+            k : int -> bool -> int |- k : int -> bool -> int by T-Var {};
+            k : int -> bool -> int |- 3 : int by T-Int {}
+        };
+        k : int -> bool -> int |- true : bool by T-Bool {}
+    }
+}
+/*93*/
+|- let k = fun x -> fun y -> x in k (1::[]) 3 : int list by T-Let {
+    |- fun x -> fun y -> x : int list -> int -> int list by T-Fun {
+        x : int list |- fun y -> x : int -> int list by T-Fun {
+            x : int list, y : int |- x : int list by T-Var {}
+        }
+    };
+    k : int list -> int -> int list |- k (1::[]) 3 : int list by T-App {
+        k : int list -> int -> int list |- k (1::[]) : int -> int list by T-App {
+            k : int list -> int -> int list |- k : int list -> int -> int list by T-Var {};
+            k : int list -> int -> int list |- 1::[] : int list by T-Cons {
+                k : int list -> int -> int list |- 1 : int by T-Int {};
+                k : int list -> int -> int list |- [] : int list by T-Nil {}
+            }
+        };
+        k : int list -> int -> int list |- 3 : int by T-Int {}
+    }
+}
+/*94*/
+|- let k = fun x -> fun y -> x in k true (fun x -> x + 1) : bool by T-Let {
+    |- fun x -> fun y -> x : bool -> (int -> int) -> bool by T-Fun {
+        x : bool |- fun y -> x : (int -> int) -> bool by T-Fun {
+            x : bool, y : int -> int |- x : bool by T-Var {}
+        }
+    };
+    k : bool -> (int -> int) -> bool |- k true (fun x -> x + 1) : bool by T-App {
+        k : bool -> (int -> int) -> bool |- k true : (int -> int) -> bool by T-App {
+            k : bool -> (int -> int) -> bool |- k : bool -> (int -> int) -> bool by T-Var {};
+            k : bool -> (int -> int) -> bool |- true : bool by T-Bool {}
+        };
+        k : bool -> (int -> int) -> bool |- (fun x -> x + 1) : (int -> int) by T-Fun {
+            k : bool -> (int -> int) -> bool, x : int |- x + 1 : int by T-Plus {
+                k : bool -> (int -> int) -> bool, x : int |- x : int by T-Var {};
+                k : bool -> (int -> int) -> bool, x : int |- 1 : int by T-Int {}
+            }
+        }
+    }
+}
+
+/*95*/
+|- let compose = fun f -> fun g -> fun x -> f (g x) in let p = fun x -> x * x in let q = fun x -> x + 4 in compose p q : int -> int by T-Let {
+    |- fun f -> fun g -> fun x -> f (g x) : (int -> int) -> (int -> int) -> (int -> int) by T-Fun {
+        f : int -> int |- fun g -> fun x -> f (g x) : (int -> int) -> (int -> int) by T-Fun {
+            f : int -> int, g : int -> int |- fun x -> f (g x) : (int -> int) by T-Fun {
+                f : int -> int, g : int -> int, x : int |- f (g x) : int by T-App {
+                    f : int -> int, g : int -> int, x : int |- f : int -> int by T-Var {};
+                    f : int -> int, g : int -> int, x : int |- g x : int by T-App {
+                        f : int -> int, g : int -> int, x : int |- g : int -> int by T-Var {};
+                        f : int -> int, g : int -> int, x : int |- x : int by T-Var {}
+                    }
+                }
+            }
+        }
+    };
+    compose : (int -> int) -> (int -> int) -> (int -> int) |- let p = fun x -> x * x in let q = fun x -> x + 4 in compose p q : int -> int by T-Let {
+        compose : (int -> int) -> (int -> int) -> (int -> int) |- fun x -> x * x  : int -> int by T-Fun {
+            compose : (int -> int) -> (int -> int) -> (int -> int), x : int |- x * x : int by T-Times {
+                compose : (int -> int) -> (int -> int) -> (int -> int), x : int |- x : int by T-Var {};
+                compose : (int -> int) -> (int -> int) -> (int -> int), x : int |- x : int by T-Var {}
+            }
+        };
+        compose : (int -> int) -> (int -> int) -> (int -> int), p : int -> int |- let q = fun x -> x + 4 in compose p q : int -> int by T-Let {
+            compose : (int -> int) -> (int -> int) -> (int -> int), p : int -> int |- fun x -> x + 4 : int -> int by T-Fun {
+                compose : (int -> int) -> (int -> int) -> (int -> int), p : int -> int, x : int |- x + 4 : int by T-Plus {
+                    compose : (int -> int) -> (int -> int) -> (int -> int), p : int -> int, x : int |- x : int by T-Var {};
+                    compose : (int -> int) -> (int -> int) -> (int -> int), p : int -> int, x : int |- 4 : int by T-Int {}
+                }
+            };
+            compose : (int -> int) -> (int -> int) -> (int -> int), p : int -> int, q : int -> int |- compose p q : int -> int by T-App {
+                compose : (int -> int) -> (int -> int) -> (int -> int), p : int -> int, q : int -> int |- compose p : (int -> int) -> (int -> int) by T-App {
+                    compose : (int -> int) -> (int -> int) -> (int -> int), p : int -> int, q : int -> int |- compose : (int -> int) -> (int -> int) -> (int -> int) by T-Var {};
+                    compose : (int -> int) -> (int -> int) -> (int -> int), p : int -> int, q : int -> int |- p : (int -> int) by T-Var {}
+                };
+                compose : (int -> int) -> (int -> int) -> (int -> int), p : int -> int, q : int -> int |- q : (int -> int) by T-Var {}
+            }
+        }
+    }
+}
+
+/*96*/ 先从p和q分析开始，已经给定型转换了
+|- let compose = fun f -> fun g -> fun x -> f (g x) in let p = fun x -> if x then 3 else 4 in let q = fun x -> x < 4 in compose p q : int -> int by T-Let {
+    |- fun f -> fun g -> fun x -> f (g x) : (bool -> int) -> (int -> bool) -> (int -> int) by T-Fun {
+        f : bool -> int |- fun g -> fun x -> f (g x) : (int -> bool) -> (int -> int) by T-Fun {
+            f : bool -> int, g : int -> bool |- fun x -> f (g x) : int -> int by T-Fun {
+                f : bool -> int, g : int -> bool, x : int |- f (g x) : int by T-App {
+                    f : bool -> int, g : int -> bool, x : int |- f : bool -> int by T-Var {};
+                    f : bool -> int, g : int -> bool, x : int |- g x : bool by T-App {
+                        f : bool -> int, g : int -> bool, x : int |- g : int -> bool by T-Var {};
+                        f : bool -> int, g : int -> bool, x : int |- x : int by T-Var {}
+                    }
+                }
+            }
+        }
+    };
+    compose : (bool -> int) -> (int -> bool) -> (int -> int) |- let p = fun x -> if x then 3 else 4 in let q = fun x -> x < 4 in compose p q : int -> int by T-Let {
+        compose : (bool -> int) -> (int -> bool) -> (int -> int) |- fun x -> if x then 3 else 4 : bool -> int by T-Fun {
+            compose : (bool -> int) -> (int -> bool) -> (int -> int), x : bool |- if x then 3 else 4 : int by T-If {
+                compose : (bool -> int) -> (int -> bool) -> (int -> int), x : bool |- x : bool by T-Var {};
+                compose : (bool -> int) -> (int -> bool) -> (int -> int), x : bool |- 3 : int by T-Int {};
+                compose : (bool -> int) -> (int -> bool) -> (int -> int), x : bool |- 4 : int by T-Int {}
+            }
+        };
+        compose : (bool -> int) -> (int -> bool) -> (int -> int), p : bool -> int |- let q = fun x -> x < 4 in compose p q : int -> int by T-Let {
+            compose : (bool -> int) -> (int -> bool) -> (int -> int), p : bool -> int |- fun x -> x < 4 : int -> bool by T-Fun {
+                compose : (bool -> int) -> (int -> bool) -> (int -> int), p : bool -> int, x : int |- x < 4 : bool by T-Lt {
+                    compose : (bool -> int) -> (int -> bool) -> (int -> int), p : bool -> int, x : int |- x : int by T-Var {};
+                    compose : (bool -> int) -> (int -> bool) -> (int -> int), p : bool -> int, x : int |- 4 : int by T-Int {}
+                }
+            };
+            compose : (bool -> int) -> (int -> bool) -> (int -> int), p : bool -> int, q : int -> bool |- compose p q : int -> int by T-App {
+                compose : (bool -> int) -> (int -> bool) -> (int -> int), p : bool -> int, q : int -> bool |- compose p : (int -> bool) -> (int -> int) by T-App {
+                    compose : (bool -> int) -> (int -> bool) -> (int -> int), p : bool -> int, q : int -> bool |- compose : (bool -> int) -> (int -> bool) -> (int -> int) by T-Var {};
+                    compose : (bool -> int) -> (int -> bool) -> (int -> int), p : bool -> int, q : int -> bool |- p : bool -> int by T-Var {}
+                };
+                compose : (bool -> int) -> (int -> bool) -> (int -> int), p : bool -> int, q : int -> bool |- q : (int -> bool) by T-Var {}
+            }
+        }
+    }
+}
+/*97*/ 首先k1和k2都是三个节的（a->b->c）k2的b->c是 int -> int 那么可以根据k2的结构分析出a是int。
+针对k1（a->b->c）.原本的结果是int -> int ，通过k2int -> int -> int， int->(int->int) 这里是因为最后一个是T-App
+最简单的情况可以先确定g，然后通过fun f -> fun g -> fun x -> f x (g x) 判断f的型变换。
+
+|- let s = fun f -> fun g -> fun x -> f x (g x) in let k1 = fun x -> fun y -> x in let k2 = fun x -> fun y -> x in s k1 k2 : int -> int by T-Let {
+    |- fun f -> fun g -> fun x -> f x (g x) : (int -> (int -> int) -> int) -> (int -> int -> int) -> int -> int by T-Fun {
+        f : int -> (int -> int) -> int |- fun g -> fun x -> f x (g x) : (int -> int -> int) -> int -> int by T-Fun {
+            f : int -> (int -> int) -> int, g : int -> int -> int |- fun x -> f x (g x) : int -> int by T-Fun {
+                f : int -> (int -> int) -> int, g : int -> int -> int, x : int |- f x (g x) : int by T-App {
+                    f : int -> (int -> int) -> int, g : int -> int -> int, x : int |- f x : (int -> int) -> int by T-App {
+                        f : int -> (int -> int) -> int, g : int -> int -> int, x : int |- f : int -> (int -> int) -> int by T-Var {};
+                        f : int -> (int -> int) -> int, g : int -> int -> int, x : int |- x : int by T-Var {}
+                    };
+                    f : int -> (int -> int) -> int, g : int -> int -> int, x : int |- g x : int -> int by T-App {
+                        f : int -> (int -> int) -> int, g : int -> int -> int, x : int |- g : int -> int -> int by T-Var {};
+                        f : int -> (int -> int) -> int, g : int -> int -> int, x : int |- x : int by T-Var {}
+                    }
+                }
+            }
+        }
+    };
+    s : (int -> (int -> int) -> int) -> (int -> int -> int) -> int -> int |- let k1 = fun x -> fun y -> x in let k2 = fun x -> fun y -> x in s k1 k2 : int -> int by T-Let {
+        s : (int -> (int -> int) -> int) -> (int -> int -> int) -> int -> int |- fun x -> fun y -> x : int -> (int -> int) -> int by T-Fun {
+            s : (int -> (int -> int) -> int) -> (int -> int -> int) -> int -> int, x : int |- fun y -> x : (int -> int) -> int by T-Fun {
+                s : (int -> (int -> int) -> int) -> (int -> int -> int) -> int -> int, x : int, y : int -> int |- x : int by T-Var {}
+            }
+        };
+        s : (int -> (int -> int) -> int) -> (int -> int -> int) -> int -> int, k1 : int -> (int -> int) -> int |- let k2 = fun x -> fun y -> x in s k1 k2 : int -> int by T-Let {
+            s : (int -> (int -> int) -> int) -> (int -> int -> int) -> int -> int, k1 : int -> (int -> int) -> int |- fun x -> fun y -> x : int -> int -> int by T-Fun {
+                s : (int -> (int -> int) -> int) -> (int -> int -> int) -> int -> int, k1 : int -> (int -> int) -> int, x : int |- fun y -> x : int -> int by T-Fun {
+                    s : (int -> (int -> int) -> int) -> (int -> int -> int) -> int -> int, k1 : int -> (int -> int) -> int, x : int, y : int |- x : int by T-Var {}
+                }
+            };
+            s : (int -> (int -> int) -> int) -> (int -> int -> int) -> int -> int, k1 : int -> (int -> int) -> int, k2 : int -> int -> int |- s k1 k2 : int -> int by T-App {
+                s : (int -> (int -> int) -> int) -> (int -> int -> int) -> int -> int, k1 : int -> (int -> int) -> int, k2 : int -> int -> int |- s k1 : (int -> int -> int) -> int -> int by T-App {
+                    s : (int -> (int -> int) -> int) -> (int -> int -> int) -> int -> int, k1 : int -> (int -> int) -> int, k2 : int -> int -> int |- s : (int -> (int -> int) -> int) -> (int -> int -> int) -> int -> int by T-Var {};
+                    s : (int -> (int -> int) -> int) -> (int -> int -> int) -> int -> int, k1 : int -> (int -> int) -> int, k2 : int -> int -> int |- k1 : (int -> (int -> int) -> int) by T-Var {}
+                };
+                s : (int -> (int -> int) -> int) -> (int -> int -> int) -> int -> int, k1 : int -> (int -> int) -> int, k2 : int -> int -> int |- k2 : (int -> int -> int) by T-Var {};
+            }
+        }
+    }
+}
+
+/*98*/(fun x -> x + 1)是(int -> int)，那么根据最后一个T-App可以分析出   s k1 k2 的时候是 (int -> int) -> (int -> int) 然后根据k2的结构，可以分析出k2是(int -> int) -> (int -> int) -> (int -> int)。
+然而，k1是通过前面f x (g x)来分析出结构的，因为s的第一个function是f，那么k1的结构应该与f相同，此前已经知道k2是g，那么就可以得到((int -> int) -> ((int -> int) -> (int -> int)) -> (int -> int)) 
+
+|- let s = fun f -> fun g -> fun x -> f x (g x) in let k1 = fun x -> fun y -> x in let k2 = fun x -> fun y -> x in s k1 k2 (fun x -> x + 1) : int -> int by T-Let {
+    |- fun f -> fun g -> fun x -> f x (g x) : ((int -> int) -> ((int -> int) -> (int -> int)) -> (int -> int)) -> ((int -> int) -> (int -> int) -> (int -> int)) -> (int -> int) -> (int -> int) by T-Fun {
+        f : ((int -> int) -> ((int -> int) -> (int -> int)) -> (int -> int)) |- fun g -> fun x -> f x (g x) : ((int -> int) -> (int -> int) -> (int -> int)) -> (int -> int) -> (int -> int) by T-Fun {
+            f : ((int -> int) -> ((int -> int) -> (int -> int)) -> (int -> int)), g : ((int -> int) -> (int -> int) -> (int -> int)) |- fun x -> f x (g x) : (int -> int) -> (int -> int) by T-Fun {
+                f : ((int -> int) -> ((int -> int) -> (int -> int)) -> (int -> int)), g : ((int -> int) -> (int -> int) -> (int -> int)), x : int -> int |- f x (g x) : (int -> int) by T-App {
+                    f : ((int -> int) -> ((int -> int) -> (int -> int)) -> (int -> int)), g : ((int -> int) -> (int -> int) -> (int -> int)), x : int -> int |- f x : ((int -> int) -> (int -> int)) -> (int -> int) by T-App {
+                        f : ((int -> int) -> ((int -> int) -> (int -> int)) -> (int -> int)), g : ((int -> int) -> (int -> int) -> (int -> int)), x : int -> int |- f : (int -> int) -> ((int -> int) -> (int -> int)) -> (int -> int) by T-Var {};
+                        f : ((int -> int) -> ((int -> int) -> (int -> int)) -> (int -> int)), g : ((int -> int) -> (int -> int) -> (int -> int)), x : int -> int |- x : (int -> int) by T-Var {}
+                    };
+                    f : ((int -> int) -> ((int -> int) -> (int -> int)) -> (int -> int)), g : ((int -> int) -> (int -> int) -> (int -> int)), x : int -> int |- g x : (int -> int) -> (int -> int) by T-App {
+                        f : ((int -> int) -> ((int -> int) -> (int -> int)) -> (int -> int)), g : ((int -> int) -> (int -> int) -> (int -> int)), x : int -> int |- g : (int -> int) -> (int -> int) -> (int -> int) by T-Var {};
+                        f : ((int -> int) -> ((int -> int) -> (int -> int)) -> (int -> int)), g : ((int -> int) -> (int -> int) -> (int -> int)), x : int -> int |- x : (int -> int) by T-Var {}
+                    }
+                }
+            }
+        }
+    };
+    s : ((int -> int) -> ((int -> int) -> (int -> int)) -> (int -> int)) -> ((int -> int) -> (int -> int) -> (int -> int)) -> (int -> int) -> (int -> int) |- let k1 = fun x -> fun y -> x in let k2 = fun x -> fun y -> x in s k1 k2 (fun x -> x + 1) : int -> int by T-Let {
+        s : ((int -> int) -> ((int -> int) -> (int -> int)) -> (int -> int)) -> ((int -> int) -> (int -> int) -> (int -> int)) -> (int -> int) -> (int -> int) |- fun x -> fun y -> x : (int -> int) -> ((int -> int) -> (int -> int)) -> (int -> int) by T-Fun {
+            s : ((int -> int) -> ((int -> int) -> (int -> int)) -> (int -> int)) -> ((int -> int) -> (int -> int) -> (int -> int)) -> (int -> int) -> (int -> int), x : int -> int |- fun y -> x : ((int -> int) -> (int -> int)) -> (int -> int) by T-Fun {
+                s : ((int -> int) -> ((int -> int) -> (int -> int)) -> (int -> int)) -> ((int -> int) -> (int -> int) -> (int -> int)) -> (int -> int) -> (int -> int), x : int -> int, y : (int -> int) -> (int -> int) |- x : (int -> int) by T-Var {}
+            }
+        };
+        s : ((int -> int) -> ((int -> int) -> (int -> int)) -> (int -> int)) -> ((int -> int) -> (int -> int) -> (int -> int)) -> (int -> int) -> (int -> int), k1 : (int -> int) -> ((int -> int) -> (int -> int)) -> (int -> int) |- let k2 = fun x -> fun y -> x in s k1 k2 (fun x -> x + 1) : int -> int by T-Let {
+            s : ((int -> int) -> ((int -> int) -> (int -> int)) -> (int -> int)) -> ((int -> int) -> (int -> int) -> (int -> int)) -> (int -> int) -> (int -> int), k1 : (int -> int) -> ((int -> int) -> (int -> int)) -> (int -> int) |- fun x -> fun y -> x : (int -> int) -> (int -> int) -> (int -> int) by T-Fun {
+                s : ((int -> int) -> ((int -> int) -> (int -> int)) -> (int -> int)) -> ((int -> int) -> (int -> int) -> (int -> int)) -> (int -> int) -> (int -> int), k1 : (int -> int) -> ((int -> int) -> (int -> int)) -> (int -> int), x : int -> int |- fun y -> x : (int -> int) -> (int -> int) by T-Fun {
+                    s : ((int -> int) -> ((int -> int) -> (int -> int)) -> (int -> int)) -> ((int -> int) -> (int -> int) -> (int -> int)) -> (int -> int) -> (int -> int), k1 : (int -> int) -> ((int -> int) -> (int -> int)) -> (int -> int), x : int -> int, y : int -> int |- x : (int -> int) by T-Var {}
+                }
+            };
+            s : ((int -> int) -> ((int -> int) -> (int -> int)) -> (int -> int)) -> ((int -> int) -> (int -> int) -> (int -> int)) -> (int -> int) -> (int -> int), k1 : (int -> int) -> ((int -> int) -> (int -> int)) -> (int -> int), k2 : (int -> int) -> (int -> int) -> (int -> int) |- s k1 k2 (fun x -> x + 1) : int -> int by T-App {
+                s : ((int -> int) -> ((int -> int) -> (int -> int)) -> (int -> int)) -> ((int -> int) -> (int -> int) -> (int -> int)) -> (int -> int) -> (int -> int), k1 : (int -> int) -> ((int -> int) -> (int -> int)) -> (int -> int), k2 : (int -> int) -> (int -> int) -> (int -> int) |- s k1 k2 : (int -> int) -> int -> int by T-App {
+                    s : ((int -> int) -> ((int -> int) -> (int -> int)) -> (int -> int)) -> ((int -> int) -> (int -> int) -> (int -> int)) -> (int -> int) -> (int -> int), k1 : (int -> int) -> ((int -> int) -> (int -> int)) -> (int -> int), k2 : (int -> int) -> (int -> int) -> (int -> int) |- s k1 : ((int -> int) -> (int -> int) -> (int -> int)) -> (int -> int) -> int -> int by T-App {
+                        s : ((int -> int) -> ((int -> int) -> (int -> int)) -> (int -> int)) -> ((int -> int) -> (int -> int) -> (int -> int)) -> (int -> int) -> (int -> int), k1 : (int -> int) -> ((int -> int) -> (int -> int)) -> (int -> int), k2 : (int -> int) -> (int -> int) -> (int -> int) |- s : ((int -> int) -> ((int -> int) -> (int -> int)) -> (int -> int)) -> ((int -> int) -> (int -> int) -> (int -> int)) -> (int -> int) -> int -> int by T-Var {};
+                        s : ((int -> int) -> ((int -> int) -> (int -> int)) -> (int -> int)) -> ((int -> int) -> (int -> int) -> (int -> int)) -> (int -> int) -> (int -> int), k1 : (int -> int) -> ((int -> int) -> (int -> int)) -> (int -> int), k2 : (int -> int) -> (int -> int) -> (int -> int) |- k1 : ((int -> int) -> ((int -> int) -> (int -> int)) -> (int -> int)) by T-Var {}
+                    };
+                    s : ((int -> int) -> ((int -> int) -> (int -> int)) -> (int -> int)) -> ((int -> int) -> (int -> int) -> (int -> int)) -> (int -> int) -> (int -> int), k1 : (int -> int) -> ((int -> int) -> (int -> int)) -> (int -> int), k2 : (int -> int) -> (int -> int) -> (int -> int) |- k2 : ((int -> int) -> (int -> int) -> (int -> int)) by T-Var {}
+                };
+                s : ((int -> int) -> ((int -> int) -> (int -> int)) -> (int -> int)) -> ((int -> int) -> (int -> int) -> (int -> int)) -> (int -> int) -> (int -> int), k1 : (int -> int) -> ((int -> int) -> (int -> int)) -> (int -> int), k2 : (int -> int) -> (int -> int) -> (int -> int) |- fun x -> x + 1 : int -> int by T-Fun {
+                    s : ((int -> int) -> ((int -> int) -> (int -> int)) -> (int -> int)) -> ((int -> int) -> (int -> int) -> (int -> int)) -> (int -> int) -> (int -> int), k1 : (int -> int) -> ((int -> int) -> (int -> int)) -> (int -> int), k2 : (int -> int) -> (int -> int) -> (int -> int), x : int |- x + 1 : int by T-Plus {
+                        s : ((int -> int) -> ((int -> int) -> (int -> int)) -> (int -> int)) -> ((int -> int) -> (int -> int) -> (int -> int)) -> (int -> int) -> (int -> int), k1 : (int -> int) -> ((int -> int) -> (int -> int)) -> (int -> int), k2 : (int -> int) -> (int -> int) -> (int -> int), x : int |- x : int by T-Var {};
+                        s : ((int -> int) -> ((int -> int) -> (int -> int)) -> (int -> int)) -> ((int -> int) -> (int -> int) -> (int -> int)) -> (int -> int) -> (int -> int), k1 : (int -> int) -> ((int -> int) -> (int -> int)) -> (int -> int), k2 : (int -> int) -> (int -> int) -> (int -> int), x : int |- 1 : int by T-Int {}
+                    }
+                }
+            }
+        }
+    }
+} 
