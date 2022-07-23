@@ -69,7 +69,7 @@
     }
 }
 
-/*73*/
+/*73*/ 函数length的意义很明显，是求list的长度，每一次recursion是x吃掉一个list的长度，然后1+增加1。LetRec分为两部分，一部分是吃list，一部分是加长度，中间的纽带是环境变量。
 |- let rec length = fun l -> match l with [] -> 0 | x :: y -> 1 + length y in length (1 :: 2 :: 3 :: []) evalto 3 by E-LetRec {
     length = ()[rec length = fun l -> match l with [] -> 0 | x :: y -> 1 + length y] |- length (1 :: 2 :: 3 :: []) evalto 3 by E-AppRec {
         length = ()[rec length = fun l -> match l with [] -> 0 | x :: y -> 1 + length y] |- length evalto ()[rec length = fun l -> match l with [] -> 0 | x :: y -> 1 + length y] by E-Var {};
@@ -123,7 +123,7 @@
     }
 }
 
-/*74*/
+/*74*/length同样是在计算list的长度，但是这次是计算list中有多少个子list。
 |- let rec length = fun l -> match l with [] -> 0 | x :: y -> 1 + length y in length ((1 :: 2 :: []) :: (3 :: 4 :: 5 :: []) :: []) evalto 2 by E-LetRec {
      length = ()[rec length = fun l -> match l with [] -> 0 | x :: y -> 1 + length y] |- length ((1 :: 2 :: []) :: (3 :: 4 :: 5 :: []) :: []) evalto 2 by E-AppRec {
         length = ()[rec length = fun l -> match l with [] -> 0 | x :: y -> 1 + length y] |- length evalto ()[rec length = fun l -> match l with [] -> 0 | x :: y -> 1 + length y] by E-Var {};
@@ -178,7 +178,7 @@
     }
 }
 
-/*75*/
+/*75*/ append函数是将list合并。第一层的l1是(1 :: 2 :: []) ；l2是(3 :: 4 :: 5 :: [])。l1在match以后 1::  y再调用append函数。
 |- let rec append = fun l1 -> fun l2 -> match l1 with [] -> l2 | x :: y -> x :: append y l2 in append (1 :: 2 :: []) (3 :: 4 :: 5 :: []) evalto 1 :: 2 :: 3 :: 4 :: 5 :: [] by E-LetRec {
     append = ()[rec append = fun l1 -> fun l2 -> match l1 with [] -> l2 | x :: y -> x :: append y l2] |- append (1 :: 2 :: []) (3 :: 4 :: 5 :: []) evalto 1::2::3::4::5::[] by E-App {
         append = ()[rec append = fun l1 -> fun l2 -> match l1 with [] -> l2 | x :: y -> x :: append y l2] |- append (1::2::[]) evalto (append = ()[rec append = fun l1 -> fun l2 -> match l1 with [] -> l2 | x :: y -> x :: append y l2], l1 = (1::2::[]))[fun l2 -> match l1 with [] -> l2 | x :: y -> x :: append y l2] by E-AppRec {
@@ -237,7 +237,20 @@
     }
 }
 
-/*76*/
+/*76*/ apply函数比较复杂，首先需要解开结构：
+第一层：
+    l是((fun x -> x * x) :: (fun y -> y + 3) :: [])
+    x是4
+第二层：
+    第一层的l中的f是(fun x -> x * x)
+    这层的l是(fun y -> y + 3) :: []
+第三层：第二次调用apply函数
+    l是(fun y -> y + 3) :: []
+    这时候f是(fun y -> y + 3)   l是[]
+    当l是空的时候，函数apply会返回x，也就是4
+返回第三层的f，4+3=7
+返回第二层的f，7*7=49
+
 |- let rec apply = fun l -> fun x -> match l with [] -> x | f :: l -> f (apply l x) in apply ((fun x -> x * x) :: (fun y -> y + 3) :: []) 4 evalto 49 by E-LetRec {
     apply = ()[rec apply = fun l -> fun x -> match l with [] -> x | f :: l -> f (apply l x)] |- apply ((fun x -> x * x) :: (fun y -> y + 3) :: []) 4 evalto 49 by E-App {
         apply = ()[rec apply = fun l -> fun x -> match l with [] -> x | f :: l -> f (apply l x)] |- apply ((fun x -> x * x) :: (fun y -> y + 3) :: []) evalto (apply = ()[rec apply = fun l -> fun x -> match l with [] -> x | f :: l -> f (apply l x)], l = ((apply = ()[rec apply = fun l -> fun x -> match l with [] -> x | f :: l -> f (apply l x)])[fun x -> x * x] :: (apply = ()[rec apply = fun l -> fun x -> match l with [] -> x | f :: l -> f (apply l x)])[fun y -> y + 3] :: []))[fun x -> match l with [] -> x | f :: l -> f (apply l x)] by E-AppRec {
