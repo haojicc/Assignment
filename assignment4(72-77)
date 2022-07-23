@@ -310,7 +310,7 @@
     }
 }
 
-/*77*/
+/*77*/E-App要处理两个部分：第一部分处理函数各层的关系，第二部分处理计算，这部分是将第一部分导入到环境变量中的函数E-Var出来，进行计算。
 |- let rec apply = fun l -> fun x -> match l with [] -> x | f :: l -> apply l (f x) in apply ((fun x -> x * x) :: (fun y -> y + 3) :: []) 4 evalto 19 by E-LetRec {
     apply = ()[rec apply = fun l -> fun x -> match l with [] -> x | f :: l -> apply l (f x)] |- apply ((fun x -> x * x) :: (fun y -> y + 3) :: []) 4 evalto 19 by E-App {
         apply = ()[rec apply = fun l -> fun x -> match l with [] -> x | f :: l -> apply l (f x)] |- apply ((fun x -> x * x) :: (fun y -> y + 3) :: []) evalto (apply = ()[rec apply = fun l -> fun x -> match l with [] -> x | f :: l -> apply l (f x)], l = (apply = ()[rec apply = fun l -> fun x -> match l with [] -> x | f :: l -> apply l (f x)])[fun x -> x * x] :: (apply = ()[rec apply = fun l -> fun x -> match l with [] -> x | f :: l -> apply l (f x)])[fun y -> y + 3] :: [])[fun x -> match l with [] -> x | f :: l -> apply l (f x)] by E-AppRec {
