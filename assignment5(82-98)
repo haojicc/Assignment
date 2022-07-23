@@ -284,7 +284,8 @@ x : bool, y : int |- if x then y + 1 else y - 1 : int by T-If {
     }
 }
 
-/*98*/(fun x -> x + 1)是(int -> int)，那么根据最后一个T-App可以分析出   s k1 k2 的时候是 (int -> int) -> (int -> int) 然后根据k2的结构，可以分析出k2是(int -> int) -> (int -> int) -> (int -> int)。
+/*98*/
+(fun x -> x + 1)是(int -> int)，那么根据最后一个T-App可以分析出   s k1 k2 的时候是 (int -> int) -> (int -> int) 然后根据k2的结构，可以分析出k2是(int -> int) -> (int -> int) -> (int -> int)。
 然而，k1是通过前面f x (g x)来分析出结构的，因为s的第一个function是f，那么k1的结构应该与f相同，此前已经知道k2是g，那么就可以得到((int -> int) -> ((int -> int) -> (int -> int)) -> (int -> int)) 
 
 |- let s = fun f -> fun g -> fun x -> f x (g x) in let k1 = fun x -> fun y -> x in let k2 = fun x -> fun y -> x in s k1 k2 (fun x -> x + 1) : int -> int by T-Let {
