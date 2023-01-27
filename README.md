@@ -4,3 +4,6 @@
 http://www.fos.kuis.kyoto-u.ac.jp/~igarashi/CoPL/
 
 by CoPL
+
+
+TQBF Solver for assisnmentC.
