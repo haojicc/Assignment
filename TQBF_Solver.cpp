@@ -1,3 +1,10 @@
+/*
+TQBF（True Quantified Boolean Formula）問題の結果を検証のため、ソルバーを開発した。
+Let ϕ = ∃x1∀x2∃x3∀x4∃x5[(x1 ∨ x2 ∨ x3 ∨ x4) ∧ (¯x2 ∨ x4) ∧ (¯x1 ∨ x2 ∨ x5)].
+Which is the winner of FORMULA-GAME for ϕ, the first player or the second player (called Bob)? 
+Answer with a reason. 
+*/
+
 #include <iostream>
 #include <vector>
 
