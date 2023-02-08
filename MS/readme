@@ -1,0 +1,133 @@
+## Readme
+
+Generate (randomly chosen) S1, S2, ..., SQ that are distinct subsets of S. The vectors must be fairly sparse. I recommend no more than 1% nonzero.
+Create a sparse matrix M whose rows represent the elements of S and whose columns represent the Sj's.
+Use n << L permutation functions hi(x) = p(i)x + 2 mod L, where p(i) = ith prime and 0 < p(i) < L. While not necessary, choosing n to be a prime number will simplify things. Assume that 1 is the first prime (even though it is not really.)
+
+Goals:
+
+Generate the SIG matrix, which will be dense.
+Approximate the Jaccard similarities using the SIG matrix and pairwise columns.
+Compute the actual Jaccard similarities for the same pairs.
+
+Notes:
+
+To debug this homework, first use the example in the class lecture notes (including its h1(x) and h2(x) definitions) and reproduce the example.
+Note that M is a binary matrix, where Mij=1 means that character i is in Sj.
+How you compute the Jaccard similarity in Goals 2 and 3 will be different due to the data structures used for M and SIG.
+When calculating J(Sj,Sk) using M's data structure recall (1,1) in a row is used in the intersection calculation (the numerator), (1,1), (0,1) and (1,0) are used in the union calculation (the denominator), and (0,0) means no intersection at all. Specifically, There are x rows with 1 in both columns.
+There are y rows with a 1 in only 1 column.
+There are z rows with 0 in both columns.
+J(Sj,Sk) = x / (x+y).
+When calculating JSIG(Sj,Sk) using SIG's data structure, the values in both Sj and Sk are used in a comparison operation. Specifically, JSIG(Sj,Sk) = percentage of rows with the same column values.
+Finally use a much larger example with L = ~2000 and let Q vary to see if you can get a close approximation of the pairwise Jaccard similarities.
+
+
+
+
+（I）I have created 3 classes where:
+
+1.initialization: 
+	(1)Initialize sparse matrix M, which each column has no more than 1% nonzero.(The density of the matrix can be modified.)Set S = {0, 1, 2, 3, 4, ..., L-1}. Generate (randomly chosen) S1, S2, ..., SQ that are distinct subsets of S. Sparse matrix M whose rows represent the elements of S and whose columns represent the S_j's. If M[i][j] = true, Subset S_j include item i. i include S = {0, 1, 2, 3, 4, ..., L-1}.
+	(2)Initialize SIG_ij = infinite(INT_MAX), for all i, j.
+	(3)By Sieve of Eratosthenes find the first nth primes(include 1). These primes will be used in construct hash function.
+	/*
+    initialization example_1(int L, int n, int j);
+    //L is the number of char in set S.
+    //n is the number of hash functions.
+    //j is the number of subsets of S.
+    std::vector<int> exampleP = example_1.initializeHashFuncChar();
+    std::vector<std::vector<bool>> exampleM = example_1.initializeM();
+    std::vector<std::vector<int>> exampleSIG = example_1.initializeSIG();
+    */
+
+2.calculateSIG: Calculate the SIG matrix according to the method provided in the lecture notes.
+	/*
+	calculateSIG example_2(exampleSIG, exampleM, exampleP, c);
+	//c is the constant of hash function. When hi(x) = p(i)x + 2 , then c = 2.
+    example_2.updateSIG();//update firstExampleSIG.
+    example_2.printSIG();//print firstExampleSIG.
+    std::vector<std::vector<int>> exampleNewSIG = example_2.getSIG();
+    */
+
+3.calculateJaccardSimilarity: Calculate the Jaccard Similarity by two different methods.
+	/*
+	calculateJaccardSimilarity example_3(exampleNewSIG, exampleM, j, k);
+	//S_j, S_k
+    std::cout << "Calculating J(S_j,S_k) using M's data structure: " << example_3.methodByM() << "\nCalculating J_SIG(S_j,S_k) using SIG's data structure: " << example_3.methodBySIG() << std::endl;
+    */
+
+Since I randomly generated the sparse matrix M, similar vectors rarely appear and the J-values are usually zero.
+If I boost the density of the matrix, the J value will improve. Which can be modified in the initializeM func in class initialization.
+I think this is because after the matrix becomes dense, the probability of similar vectors appearing increases.
+So I create the sparse matrix M by myself, and at 3 rows they both have true.Then the result has changed.
+
+Then I repeated the generation many times, and when this value is not 0, the results of the two different methods are similar.
+
+(II) Result
+
+/Users/haoji/CLionProjects/jaccardSimilarities/cmake-build-debug/jaccardSimilarities
+First use the example in the class lecture notes (including its h1(x) and h2(x) definitions):
+|0  3  1  |
+|1  0  0  |
+Calculating J(Sj,Sk) using M's data structure: 0.2
+Calculating J_SIG(Sj,Sk) using firstExampleSIG's data structure: 0
+Finally use a much larger example with L = ~2000:
+Calculating J(Sj,Sk) using M's data structure: 0.0357143
+Calculating J_SIG(Sj,Sk) using firstExampleSIG's data structure: 0.03
+
+进程已结束,退出代码0
+
+(III) Use this exmple.
+
+int main() {
+    std::cout << "First use the example in the class lecture notes (including its h1(x) and h2(x) definitions):" << std::endl;
+    int firstExampleL = 5; // The number of char in set S.
+    int firstExampleN = 2; // The number of hash functions.
+    int firstExampleJ = 3; // The number of subsets of S.
+    int firstExampleC = 1; //The constant of hash function. When hi(x) = p(i)x + 1 , then firstExampleC = 1.
+
+    initialization firstExample_1(firstExampleL, firstExampleN, firstExampleJ); //Prepare for calculation.
+    std::vector<int> firstExampleP {1, 3};
+    std::vector<std::vector<bool>> firstExampleM {
+            {1, 0, 1},
+            {0, 0, 1},
+            {1, 1, 0},
+            {0, 1, 1},
+            {1, 0, 0}
+    };
+    std::vector<std::vector<int>> firstExampleSIG = firstExample_1.initializeSIG();
+
+    calculateSIG firstExample_2(firstExampleSIG, firstExampleM, firstExampleP, firstExampleC);
+    firstExample_2.updateSIG();//update firstExampleSIG.
+    firstExample_2.printSIG();//print firstExampleSIG.
+    std::vector<std::vector<int>> newSIG = firstExample_2.getSIG();
+
+    calculateJaccardSimilarity firstExample_3(newSIG, firstExampleM, 0, 2); // const std::vector<std::vector<int>> &sig, const std::vector<std::vector<bool>> &sparseMatrixM, int secondExampleJ, int k
+    std::cout << "Calculating J(Sj,Sk) using M's data structure: " << firstExample_3.methodByM() << "\nCalculating J_SIG(Sj,Sk) using firstExampleSIG's data structure: " << firstExample_3.methodBySIG() << std::endl;
+
+//    printMatrix(firstExampleM); //Check the dence of M.
+//    printPrime(firstExampleP); //Check the prime numbers.
+
+    std::cout << "Finally use a much larger example with L = ~2000:" << std::endl;
+    int secondExampleL = 1800;// The number of char in set S.
+    int secondExampleN = 200;// The number of hash functions.
+    int secondExampleJ = 3;// The number of subsets of S.
+    int secondExampleC = 2;//The constant of hash function. When hi(x) = p(i)x + 2 , then secondExampleC = 2.
+
+    initialization secondExample_1(secondExampleL, secondExampleN, secondExampleJ);
+    std::vector<int> secondExampleP = secondExample_1.initializeHashFuncChar();
+    std::vector<std::vector<bool>> secondExampleM = secondExample_1.initializeM();
+    std::vector<std::vector<int>> secondExampleSIG = secondExample_1.initializeSIG();
+
+//    printM(secondExampleM); //Check the dence of M.
+
+    calculateSIG secondExample_2(secondExampleSIG, secondExampleM, secondExampleP, secondExampleC);
+    secondExample_2.updateSIG();//update firstExampleSIG.
+//    secondExample_2.printSIG();//print firstExampleSIG.
+    std::vector<std::vector<int>> secondExampleNewSIG = secondExample_2.getSIG();
+    calculateJaccardSimilarity secondExample_3(secondExampleNewSIG, secondExampleM, 0, 2);
+    std::cout << "Calculating J(Sj,Sk) using M's data structure: " << secondExample_3.methodByM() << "\nCalculating J_SIG(Sj,Sk) using firstExampleSIG's data structure: " << secondExample_3.methodBySIG() << std::endl;
+
+    return 0;
+}
