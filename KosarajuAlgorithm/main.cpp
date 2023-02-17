@@ -33,7 +33,9 @@ int main() {
     sscAlgo.setNumOfVertics(reader.getNumOfVertics());
     vector<int> visited(reader.getNumOfVertics()+1, 0);
     stack<int> s;
-    sscAlgo.DFS(g,visited,s,1);
+    for(int v = 1; v <= reader.getNumOfVertics(); v++){
+        sscAlgo.DFS(g,visited,s,v);
+    }
 
     Graph rg = sscAlgo.reverse(g, reader.getNumOfVertics());
     ssc ret = sscAlgo.findSSC(rg, s);
