@@ -13,5 +13,5 @@ TQBF Solver for assisnmentC.
 SIG matrixとJaccard similaritiesでMinhash Signaturesを計算し、Jaccard similarities方法がより効果的と推定される状況を分析した。
 
 
-##[Kosaraju' algo](https://github.com/haojicc/Assignment/tree/main/KosarajuAlgorithm)
+## [Kosaraju' algo](https://github.com/haojicc/Assignment/tree/main/KosarajuAlgorithm)
 For Strongly Connected Components
