@@ -20,9 +20,11 @@ void stronglyConnectedComponentsAlgo::DFS(Graph &g, vector<int> &visited, stack<
         return;
     }
     visited[v] = 1;
-    for(auto u: g[v]){
-        if(visited[u] == 0){
-            DFS(g, visited, s, u);
+    if(g[v].size() != 0){
+        for(auto u: g[v]){
+            if(visited[u] == 0){
+                DFS(g, visited, s, u);
+            }
         }
     }
     s.push(v);
